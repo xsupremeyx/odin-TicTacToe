@@ -156,8 +156,6 @@ const displayController = (function(){
             cell.classList.remove("disabled");
         });
         gameActive = true;
-        console.log("CELLS ENABLED");
-
     };
 
 
@@ -185,7 +183,6 @@ const displayController = (function(){
         enableCells();
 
         nameModal.classList.remove("active");
-        console.log("START GAME CLICKED");
 
     };
 
@@ -193,7 +190,6 @@ const displayController = (function(){
         if (!gameActive) return;
         const index = +event.target.dataset.index;
         const results = gameController.playRound(index);
-        console.log(results);
         if(results.status === 'tie' || results.status === 'win'){
             gameActive = false;
             disableCells();
@@ -243,9 +239,6 @@ const displayController = (function(){
         gameActive = false;
         startGameBtn.addEventListener("click", handleStartGame);
 
-        // currentPlayer = gameController.getActivePlayer();
-        // primaryStatus.textContent = "Start Game!";
-        // secondaryStatus.textContent = `Player ${currentPlayer.name} to play first (${currentPlayer.marker})`;
         primaryStatus.textContent = "Start Game!";
         secondaryStatus.textContent = "Enter player names to begin";
 

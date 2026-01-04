@@ -49,7 +49,7 @@ p {
     --text-color1: white;
     --text-color2: black;
     --padding: clamp(16px, 2vw, 20px);
-    --font-style: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    --font-style: 'Montserrat','Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     --font-size: 16px;
     --font-size-xs: 0.75rem;/* 12px */
     --font-size-sm: 0.875rem;/* 14px */
@@ -128,16 +128,21 @@ body{
     align-items: center;
     justify-content: center;
     gap: 5px;
+
+    min-height: 3.5rem;
+    text-align: center;
 }
 
 .status .primary{
     font-size: var(--font-size-lg);
     font-weight: var(--font-weight-bold);
+    letter-spacing: 0.5px;
 }
 
 .status .secondary{
     font-size: var(--font-size-sm);
     font-weight: var(--font-weight-medium);
+    opacity: 0.85;
 }
 
 .restart{
@@ -149,6 +154,7 @@ body{
     border: none;
     border-radius: 5px;
     cursor: pointer;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
 }
 
 button.restart:hover{
@@ -157,10 +163,7 @@ button.restart:hover{
 button.restart:active{
     transform: scale(0.98);
 }
-button.restart:focus{
-    outline: 2px solid var(--text-color1);
-    outline-offset: 2px;
-}
+
 
 .board-container{
     max-width: 600px;
@@ -170,6 +173,9 @@ button.restart:focus{
     grid-template-columns: repeat(3, 1fr);
     grid-template-rows: repeat(3, 1fr);
     gap: 10px;
+    padding: 10px;
+    border-radius: 12px;
+    background: rgba(0, 0, 0, 0.05);
 }
 
 .cell{
@@ -182,6 +188,7 @@ button.restart:focus{
     cursor: pointer;
     user-select: none;
     border: 2px solid var(--main-color2);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
 }
 
 .cell:hover{
@@ -202,11 +209,17 @@ button.restart:focus{
     pointer-events: none;
     cursor: default;
     opacity: 0.6;
+    filter: grayscale(40%);
 }
 
 .cell.disabled:hover{
     background: var(--side-color2);
     color: var(--text-color2);
+}
+
+.cell:focus-visible {
+    outline: 2px solid var(--main-color);
+    outline-offset: 2px;
 }
 
 .name-modal {
