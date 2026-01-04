@@ -111,7 +111,41 @@ const gameController = ( function() {
 
 })();
 
-const gameControl = gameController;
+const displayController = (function(){
+    //dependencies
+    let boardContainer;
+    let cells = [];
+    let statusBar;
+    let restartButton;
+
+    
+
+
+    const cacheDOM = () => {
+        boardContainer = document.querySelector(".board-container");
+        statusBar = document.querySelector(".status");
+        restartButton = document.querySelector(".restart");
+        cells = Array.from(document.querySelectorAll(".cell"));
+    };
+
+    const renderBoard = () => {
+        const board = gameController.getGameBoard();
+        for (let index = 0; index < board.length; index++) {
+            cells[index].textContent = board[index] === null ? (""):(board[index]);
+        }
+    };
+
+    const init = () => {
+        cacheDOM();
+        gameController.initGame();
+        statusBar.textContent = "Start Game!";
+        renderBoard();
+    };
+
+    return {init};
+})();
+
+displayController.init();
 
 
 
