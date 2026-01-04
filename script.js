@@ -51,10 +51,8 @@ const gameController = ( function() {
     }
 
     //Game initialiser
-    const initGame = () => {
+    const initGame = (name1 = "one", name2 = "two") => {
         resetGame();
-        let name1 = "one";
-        let name2 = "two";
         let marker1 = "X";
         let marker2 = "O"
         pushPlayerDetails(name1, marker1);
@@ -114,6 +112,15 @@ const gameController = ( function() {
 })();
 
 const displayController = (function(){
+
+    //modal inputs
+    let nameModal;
+    let player1Input;
+    let player2Input;
+    let startGameBtn;
+    let player1Name = "one";
+    let player2Name = "two";
+
     //dependencies
     let boardContainer;
     let cells = [];
@@ -125,6 +132,11 @@ const displayController = (function(){
     let gameActive = true;
 
     const cacheDOM = () => {
+        nameModal = document.querySelector(".name-modal");
+        player1Input = document.querySelector("#player1");
+        player2Input = document.querySelector("#player2");
+        startGameBtn = document.querySelector(".start-game");
+
         boardContainer = document.querySelector(".board-container");
         statusBar = document.querySelector(".status");
         primaryStatus = statusBar.querySelector(".primary");
@@ -144,6 +156,8 @@ const displayController = (function(){
             cell.classList.remove("disabled");
         });
         gameActive = true;
+        console.log("CELLS ENABLED");
+
     };
 
 
@@ -152,6 +166,27 @@ const displayController = (function(){
         for (let index = 0; index < board.length; index++) {
             cells[index].textContent = board[index] === null ? (""):(board[index]);
         }
+    };
+
+    const handleStartGame = () => {
+        player1Name = player1Input.value.trim() || "one";
+        player2Name = player2Input.value.trim() || "two";
+
+        gameController.initGame(player1Name, player2Name);
+
+        currentPlayer = gameController.getActivePlayer();
+        gameActive = true;
+
+        primaryStatus.textContent = "Game On!";
+        secondaryStatus.textContent =
+            `Player ${currentPlayer.name}'s turn (${currentPlayer.marker})`;
+
+        renderBoard();
+        enableCells();
+
+        nameModal.classList.remove("active");
+        console.log("START GAME CLICKED");
+
     };
 
     const handleCellClick = (event) => {
@@ -185,6 +220,8 @@ const displayController = (function(){
         renderBoard();
     };
 
+    //issues:-  resetHandler init not given params.
+
     const addListenertoCells = () => {
         cells.forEach(cell => {
             cell.addEventListener("click", handleCellClick);
@@ -192,7 +229,7 @@ const displayController = (function(){
     };
 
     const resetHandler = () => {
-        gameController.initGame();
+        gameController.initGame(player1Name, player2Name);
         enableCells();
         currentPlayer = gameController.getActivePlayer();
         primaryStatus.textContent = "Start Game!";
@@ -202,12 +239,16 @@ const displayController = (function(){
 
     const init = () => {
         cacheDOM();
-        gameController.initGame();
-        enableCells();
-        // restartButton.addEventListener("click", init);
-        currentPlayer = gameController.getActivePlayer();
+        disableCells();
+        gameActive = false;
+        startGameBtn.addEventListener("click", handleStartGame);
+
+        // currentPlayer = gameController.getActivePlayer();
+        // primaryStatus.textContent = "Start Game!";
+        // secondaryStatus.textContent = `Player ${currentPlayer.name} to play first (${currentPlayer.marker})`;
         primaryStatus.textContent = "Start Game!";
-        secondaryStatus.textContent = `Player ${currentPlayer.name} to play first (${currentPlayer.marker})`;
+        secondaryStatus.textContent = "Enter player names to begin";
+
         renderBoard();
         addListenertoCells();
         restartButton.addEventListener("click", resetHandler);
