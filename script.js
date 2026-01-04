@@ -40,6 +40,8 @@ const gameController = ( function() {
         }
     };
 
+    const getActivePlayer = () => players[activeIndex];
+
 
     //Reset game
     const resetGame = () => {
@@ -107,7 +109,7 @@ const gameController = ( function() {
         }
     };
 
-    return {initGame, playRound, resetGame, getGameBoard}
+    return {initGame, playRound, resetGame, getGameBoard, getActivePlayer};
 
 })();
 
@@ -116,17 +118,34 @@ const displayController = (function(){
     let boardContainer;
     let cells = [];
     let statusBar;
+    let primaryStatus;
+    let secondaryStatus;
     let restartButton;
-
-    
-
+    let currentPlayer;
+    let gameActive = true;
 
     const cacheDOM = () => {
         boardContainer = document.querySelector(".board-container");
         statusBar = document.querySelector(".status");
+        primaryStatus = statusBar.querySelector(".primary");
+        secondaryStatus = statusBar.querySelector(".secondary");
         restartButton = document.querySelector(".restart");
         cells = Array.from(document.querySelectorAll(".cell"));
     };
+
+    const disableCells = () => {
+        cells.forEach(cell => {
+            cell.classList.add("disabled");
+        });
+    };
+
+    const enableCells = () => {
+        cells.forEach(cell => {
+            cell.classList.remove("disabled");
+        });
+        gameActive = true;
+    };
+
 
     const renderBoard = () => {
         const board = gameController.getGameBoard();
@@ -135,11 +154,63 @@ const displayController = (function(){
         }
     };
 
+    const handleCellClick = (event) => {
+        if (!gameActive) return;
+        const index = +event.target.dataset.index;
+        const results = gameController.playRound(index);
+        console.log(results);
+        if(results.status === 'tie' || results.status === 'win'){
+            gameActive = false;
+            disableCells();
+            if(results.status === 'tie'){
+                primaryStatus.textContent = "It's a tie!";
+                secondaryStatus.textContent = "Click Restart to play again.";
+            }
+            else if (results.status === 'win') {
+                primaryStatus.textContent = `Player ${results.winner.name} wins! (${results.winner.marker})`;
+                secondaryStatus.textContent = "Click Restart to play again.";
+            }
+        }
+        else if(results.status === 'continue'){
+            primaryStatus.textContent = "Game On!";
+            currentPlayer = gameController.getActivePlayer();
+            secondaryStatus.textContent = `Player ${currentPlayer.name}'s turn (${currentPlayer.marker})`;
+
+        }
+        else if (results.status === 'invalid'){
+            primaryStatus.textContent = "Invalid Move Try Again!";
+            secondaryStatus.textContent = `Player ${currentPlayer.name}'s turn (${currentPlayer.marker})`;
+            return;
+        }
+        renderBoard();
+    };
+
+    const addListenertoCells = () => {
+        cells.forEach(cell => {
+            cell.addEventListener("click", handleCellClick);
+        });
+    };
+
+    const resetHandler = () => {
+        gameController.initGame();
+        enableCells();
+        currentPlayer = gameController.getActivePlayer();
+        primaryStatus.textContent = "Start Game!";
+        secondaryStatus.textContent = `Player ${currentPlayer.name} to play first (${currentPlayer.marker})`;
+        renderBoard();
+    }
+
     const init = () => {
         cacheDOM();
         gameController.initGame();
-        statusBar.textContent = "Start Game!";
+        enableCells();
+        // restartButton.addEventListener("click", init);
+        currentPlayer = gameController.getActivePlayer();
+        primaryStatus.textContent = "Start Game!";
+        secondaryStatus.textContent = `Player ${currentPlayer.name} to play first (${currentPlayer.marker})`;
         renderBoard();
+        addListenertoCells();
+        restartButton.addEventListener("click", resetHandler);
     };
 
     return {init};
